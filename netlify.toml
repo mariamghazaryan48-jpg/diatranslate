@@ -3,13 +3,13 @@
   publish = "dist"
 
 [[redirects]]
-  from = "/api/deepl/free"
+  from = "/api/free/*"
   to = "https://api-free.deepl.com/v2/translate"
   status = 200
   force = true
 
 [[redirects]]
-  from = "/api/deepl/pro"
+  from = "/api/pro/*"
   to = "https://api.deepl.com/v2/translate"
   status = 200
   force = true
