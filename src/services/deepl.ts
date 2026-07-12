@@ -1,8 +1,9 @@
 import type { TranslationRequest, TranslationResult } from "@/types/translation";
 import { DEEPL_LANGUAGE_MAP } from "@/utils/language";
 
-const FREE_API_BASE_URL = "https://api-free.deepl.com/v2/translate";
-const PRO_API_BASE_URL = "https://api.deepl.com/v2/translate";
+// Route locally so Netlify intercepts it and acts as our proxy middleman
+const FREE_API_BASE_URL = "/api/deepl/free";
+const PRO_API_BASE_URL = "/api/deepl/pro";
 
 function resolveBaseUrl(apiKey: string) {
   return apiKey.endsWith(":fx") ? FREE_API_BASE_URL : PRO_API_BASE_URL;
@@ -39,11 +40,11 @@ export async function translateText({
   body.append("text", text);
   body.append("target_lang", DEEPL_LANGUAGE_MAP[targetLang]);
   body.append("source_lang", DEEPL_LANGUAGE_MAP[sourceLang]);
-  body.append("auth_key", key);
 
   const response = await fetch(resolveBaseUrl(key), {
     method: "POST",
     headers: {
+      "Authorization": `DeepL-Auth-Key ${key}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body,
