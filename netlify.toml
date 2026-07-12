@@ -3,11 +3,16 @@
   publish = "dist"
 
 [[redirects]]
-  from = "/api/*"
-  to = "https://api-free.deepl.com/v2/:splat"
+  from = "/api/deepl/free"
+  to = "https://api-free.deepl.com/v2/translate"
   status = 200
   force = true
-  headers = { X-From = "Netlify" }
+
+[[redirects]]
+  from = "/api/deepl/pro"
+  to = "https://api.deepl.com/v2/translate"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
