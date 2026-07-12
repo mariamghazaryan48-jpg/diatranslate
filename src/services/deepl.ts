@@ -1,8 +1,8 @@
 import type { TranslationRequest, TranslationResult } from "@/types/translation";
 import { DEEPL_LANGUAGE_MAP } from "@/utils/language";
 
-const FREE_API_BASE_URL = "/api/deepl/free";
-const PRO_API_BASE_URL = "/api/deepl/pro";
+const FREE_API_BASE_URL = "/api/free/translate";
+const PRO_API_BASE_URL = "/api/pro/translate";
 
 function resolveBaseUrl(apiKey: string) {
   return apiKey.endsWith(":fx") ? FREE_API_BASE_URL : PRO_API_BASE_URL;
