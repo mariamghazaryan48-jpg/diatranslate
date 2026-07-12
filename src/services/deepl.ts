@@ -1,8 +1,9 @@
 import type { TranslationRequest, TranslationResult } from "@/types/translation";
 import { DEEPL_LANGUAGE_MAP } from "@/utils/language";
 
-const FREE_API_BASE_URL = "/api/free/translate";
-const PRO_API_BASE_URL = "/api/pro/translate";
+// Call DeepL directly, completely bypassing Netlify's local URLs
+const FREE_API_BASE_URL = "https://api-free.deepl.com/v2/translate";
+const PRO_API_BASE_URL = "https://api.deepl.com/v2/translate";
 
 function resolveBaseUrl(apiKey: string) {
   return apiKey.endsWith(":fx") ? FREE_API_BASE_URL : PRO_API_BASE_URL;
@@ -21,7 +22,10 @@ export async function translateText({
     };
   }
 
-  if (!apiKey.trim()) {
+  // Use the key passed from settings, or fall back to the Netlify environment variable
+  const key = apiKey?.trim() || import.meta.env.VITE_DEEPL_API_KEY || "";
+
+  if (!key) {
     throw new Error("Add a DeepL API key in Settings to enable machine translation.");
   }
 
@@ -33,15 +37,21 @@ export async function translateText({
     };
   }
 
+  // DeepL expects application/x-www-form-urlencoded format
   const body = new URLSearchParams();
   body.append("text", text);
-  body.append("source_lang", DEEPL_LANGUAGE_MAP[sourceLang]);
   body.append("target_lang", DEEPL_LANGUAGE_MAP[targetLang]);
+  if (sourceLang !== "auto") {
+    body.append("source_lang", DEEPL_LANGUAGE_MAP[sourceLang]);
+  }
 
-  const response = await fetch(resolveBaseUrl(apiKey), {
+  // We change this to a clean direct fetch without the Authorization header 
+  // because DeepL's CORS configuration prefers the key inside the body or as a query param!
+  body.append("auth_key", key);
+
+  const response = await fetch(resolveBaseUrl(key), {
     method: "POST",
     headers: {
-      Authorization: `DeepL-Auth-Key ${apiKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body,
